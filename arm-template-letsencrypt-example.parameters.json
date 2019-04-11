@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "discriminator": {
-        "value": "Replace with a random string: lowercase letters only"
+      "value": "Replace with a random string: lowercase letters only"
     },
     "appServiceContributerRoleGuid": {
       "value": "A Guid that will serve as the name for the roleAssignment. Should be unique and remain constant"
@@ -16,6 +16,9 @@
     },
     "appServiceContributerClientSecret": {
       "value": "ClientSecret of the Service Principal that the LetsEncrypt extension should use -- Pro tip: DO NOT CHECK THIS INTO SOURCE CONTROL, USE A KEY VAULT"
+    },
+    "customHostName": {
+      "value": "bier.henrybeen.nl"
     }
   }
 }

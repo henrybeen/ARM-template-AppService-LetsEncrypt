@@ -22,28 +22,20 @@
     "appServiceContributerClientSecret": {
       "type": "securestring",
       "minLength": 1
+    },
+    "customHostName": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "variables": {
-    "storageAccountName": "[concat(parameters('discriminator'), 'storage')]",
     "webAppName": "[concat(parameters('discriminator'), '-appServicePlan')]",
     "webAppSkuName": "B1",
     "webAppWorkerCount": 1,
     "appServiceName": "[concat(parameters('discriminator'), '-appService')]",
-    "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
     "contributorRoleGuid": "b24988ac-6180-42a0-ab88-20f7382dd24c"
   },
   "resources": [
-    {
-      "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('storageAccountName')]",
-      "apiVersion": "2016-01-01",
-      "location": "[resourceGroup().location]",
-      "kind": "Storage",
-      "sku": {
-        "name": "Standard_LRS"
-      }
-    },
     {
       "name": "[variables('webAppName')]",
       "type": "Microsoft.Web/serverfarms",
@@ -75,13 +67,15 @@
       },
       "resources": [
         {
-          "apiVersion": "2015-04-01",
-          "name": "Microsoft.AspNetCore.AzureAppServices.SiteExtension",
-          "type": "siteextensions",
+          "type": "hostNameBindings",
+          "name": "[parameters('customHostName')]",
+          "apiVersion": "2016-08-01",
+          "location": "[resourceGroup().location]",
+          "properties": {
+          },
           "dependsOn": [
-            "[resourceId('Microsoft.Web/Sites', variables('appServiceName'))]"
-          ],
-          "properties": {}
+            "[resourceId('Microsoft.Web/sites', variables('appServiceName'))]"
+          ]
         },
         {
           "apiVersion": "2015-08-01",
@@ -101,8 +95,6 @@
             "[resourceId('Microsoft.Web/sites', variables('appServiceName'))]"
           ],
           "properties": {
-            "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]",
-            "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]",
             "letsencrypt:Tenant": "[subscription().tenantId]",
             "letsencrypt:SubscriptionId": "[subscription().subscriptionId]",
             "letsencrypt:ResourceGroupName": "[resourceGroup().name]",
